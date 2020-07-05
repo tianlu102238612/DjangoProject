@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from vote import settings
+from django.conf.urls import url, include
 from polls.views import show_subjects,show_teachers,good_or_bad,login,logout
 
 urlpatterns = [
@@ -28,3 +29,9 @@ urlpatterns = [
     path('login/',login),
     path('',logout),
 ]
+
+if settings.DEBUG:
+
+    import debug_toolbar
+
+    urlpatterns.insert(0, path('__debug__/', include(debug_toolbar.urls)))
