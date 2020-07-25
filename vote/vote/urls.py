@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from vote import settings
 from django.conf.urls import url, include
-from polls.views import show_subjects,show_teachers,good_or_bad,login,logout
+from polls.views import show_subjects,show_teachers,good_or_bad,login,logout,get_captcha
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('login.html',login),
     path('login/',login),
     path('',logout),
+    path('captcha/', get_captcha)
 ]
 
 if settings.DEBUG:

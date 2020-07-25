@@ -4,9 +4,21 @@ from django.http import JsonResponse
 from django.http import HttpResponse,HttpRequest
 from polls.utils import gen_md5_digest,Captcha,gen_random_code
 
+from bpmappers import RawField
+from bpmappers.djangomodel import ModelMapper
+class SubjectMapper(ModelMapper):
+    isHot = RawField('is_hot')
+    class Meta:
+        model = Subject
+        exclude = ('create_date','is_hot')
+
+
 def show_subjects(request):
-    subjects = Subject.objects.all().order_by('no')
-    return render(request, 'subjects.html', {'subjects':subjects})
+    queryset = Subject.objects.all()
+    subjects = []
+    for subject in queryset:
+        subjects.append(SubjectMapper(subject).as_dict())
+    return JsonResponse(subjects,safe=False)
 
 def show_teachers(request):
     try:
