@@ -8,6 +8,8 @@ from order.models import Order
 from accounts.forms import LoginForm,RegisterForm,GuestForm
 from billing.models import BillingProfile
 
+from accounts.models import GuestEmail
+
 def cart_home(request):
     cart_obj,new_obj = Cart.objects.new_or_get_cart(request)
     products = cart_obj.products.all()
@@ -19,6 +21,8 @@ def cart_home(request):
     cart_obj.save()
     context = {"cart":cart_obj}
     return render(request,"cart/home.html",context)
+
+
 
 def cart_update(request):
     print(request.POST)
@@ -40,6 +44,8 @@ def cart_update(request):
             return redirect(request.META['HTTP_REFERER'])
     print(cart_obj.products.all())
 
+
+
 def checkout_home(request):
     cart_obj,new_cart_created = Cart.objects.new_or_get_cart(request)
     order_obj = None
@@ -52,10 +58,16 @@ def checkout_home(request):
     billing_profile = None
     login_form = LoginForm() 
     guest_form = GuestForm()
+    guest_email_id = request.session.get('guest_email_id')
     
     if current_user.is_authenticated:
         billing_profile,billing_profile_created = BillingProfile.objects.get_or_create(user=current_user,email=current_user.email)
-
+    elif guest_email_id is not None:
+        guest_email_object = GuestEmail.objects.get(id=guest_email_id)
+        billing_profile,billing_guest_profile_created = BillingProfile.objects.get_or_create(email=guest_email_object.email)
+    else:
+        pass
+    
     context = {"object":order_obj,
                "billing_profile":billing_profile,
                "login_form":login_form,

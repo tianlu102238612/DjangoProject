@@ -22,7 +22,7 @@ from django.urls import path
 
 
 from .views import home_page,logout_view
-from accounts.views import login_page,register_page
+from accounts.views import login_page,register_page,guest_register_view
 
 from products.views import ProductListView,product_list_view,product_detail_view
 from cart.views import cart_home,cart_update,checkout_home
@@ -31,12 +31,17 @@ from cart.views import cart_home,cart_update,checkout_home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/',home_page),
+    
     path('login/',login_page,name="login"),
     path('logout/',logout_view,name="logout"),
     path('register/',register_page,name="register"),
+    path('register/guest/',guest_register_view,name="guest_register_view"),
+    
     path('products/',product_list_view,name="products"),
     path('products/<int:pk>/',product_detail_view,name="products_detail"),
+    
     path('search/',include("search.urls")),
+    
     path('cart/',cart_home,name='cart'),
     path('cart/update/',cart_update,name='update'),
     path('cart/checkout/',checkout_home,name="checkout")

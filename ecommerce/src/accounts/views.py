@@ -1,8 +1,44 @@
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
-from .forms import LoginForm,RegisterForm
+from .forms import LoginForm,RegisterForm,GuestForm
 from django.contrib.auth import authenticate,login,logout,get_user_model
 from django.utils.http import is_safe_url
+
+from .models import GuestEmail
+
+
+def guest_register_view(request):
+    guest_form = GuestForm(request.POST or None)
+    context = {"form":guest_form}
+    
+    # where to go after user login or register
+    next_get = request.GET.get('next')
+    next_post = request.POST.get('next')
+    redirect_path = next_get or next_post or None
+    
+    print(next_get)
+    print(next_post)
+    print(redirect_path)
+    
+    if guest_form.is_valid():
+        current_email = guest_form.cleaned_data['email']
+        print("guest email:" + current_email)
+        #store the guest email in database
+        new_guest_email = GuestEmail.objects.create(email=current_email)
+        # put the id into session variable, to check if the email already exists and if it has a billing profile
+        request.session['guest_email_id'] = new_guest_email.id
+        print(new_guest_email.id)
+        print(new_guest_email.email)
+        print(redirect_path)
+    
+        if is_safe_url(redirect_path,request.get_host()):
+            print("redirect path:" + redirect_path)
+            return redirect(redirect_path)
+        else:
+            return redirect("/register/guest/")
+        
+    return redirect("/register")
+
 
 
 def login_page(request):
@@ -13,6 +49,10 @@ def login_page(request):
     next_get = request.GET.get('next')
     next_post = request.POST.get('next')
     redirect_path = next_get or next_post or None
+    
+    print(next_get)
+    print(next_post)
+    print(redirect_path)
     
     if login_form.is_valid():
         print(login_form.cleaned_data)
