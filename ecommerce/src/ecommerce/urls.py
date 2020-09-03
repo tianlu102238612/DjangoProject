@@ -21,10 +21,11 @@ from django.contrib import admin
 from django.urls import path
 
 
-from .views import home_page,login_page,register_page,logout_view
+from .views import home_page,logout_view
+from accounts.views import login_page,register_page
 
 from products.views import ProductListView,product_list_view,product_detail_view
-from cart.views import cart_home,cart_update
+from cart.views import cart_home,cart_update,checkout_home
 
 
 urlpatterns = [
@@ -37,7 +38,8 @@ urlpatterns = [
     path('products/<int:pk>/',product_detail_view,name="products_detail"),
     path('search/',include("search.urls")),
     path('cart/',cart_home,name='cart'),
-    path('cart/update/',cart_update,name='update')
+    path('cart/update/',cart_update,name='update'),
+    path('cart/checkout/',checkout_home,name="checkout")
 ]
 
 if settings.DEBUG:
