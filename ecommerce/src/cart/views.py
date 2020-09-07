@@ -52,7 +52,7 @@ def checkout_home(request):
     if new_cart_created or cart_obj.products.count()==0:
         return redirect('/cart')
     else:
-        order_obj,new_order_obj = Order.objects.get_or_create(cart=cart_obj)
+        order_obj,new_order_obj = Order.objects.get_or_create(cart=cart_obj,active=True)
         
     current_user = request.user
     billing_profile = None
@@ -61,17 +61,30 @@ def checkout_home(request):
     guest_email_id = request.session.get('guest_email_id')
     
     if current_user.is_authenticated:
+        #login user checkout
         billing_profile,billing_profile_created = BillingProfile.objects.get_or_create(user=current_user,email=current_user.email)
     elif guest_email_id is not None:
+        #guesr user checkout
         guest_email_object = GuestEmail.objects.get(id=guest_email_id)
         billing_profile,billing_guest_profile_created = BillingProfile.objects.get_or_create(email=guest_email_object.email)
     else:
         pass
     
-    context = {"object":order_obj,
+    if billing_profile is not None:
+        order_qs = Order.objects.filter(billing_profile=billing_profile,cart=cart_obj,active=True)
+        if order_qs.count() == 1:
+            order_obj = order_qs.first()
+        else:
+           # old_order_qs = Order.objects.exclude(billing_profile=billing_profile).filter(cart=cart_obj,active=True)
+            #if old_order_qs.exists():
+            #    old_order_qs.update(active=False)
+            order_obj = Order.objects.create(billing_profile = billing_profile, cart = cart_obj)
+        
+    
+    context = {"order_object":order_obj,
                "billing_profile":billing_profile,
                "login_form":login_form,
-               "guest_form":guest_form
+               "guest_form":guest_form,
                }
     
     

@@ -19,6 +19,7 @@ def guest_register_view(request):
     print(next_get)
     print(next_post)
     print(redirect_path)
+    print(request.META.items())
     
     if guest_form.is_valid():
         current_email = guest_form.cleaned_data['email']
@@ -35,7 +36,7 @@ def guest_register_view(request):
             print("redirect path:" + redirect_path)
             return redirect(redirect_path)
         else:
-            return redirect("/register/guest/")
+            return redirect("/register")
         
     return redirect("/register")
 
@@ -59,14 +60,19 @@ def login_page(request):
         username = login_form.cleaned_data.get('username')
         password = login_form.cleaned_data.get('password')
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
+            
+            try:
+                del request.session['guest_email_id']
+            except:
+                pass
+            
             if is_safe_url(redirect_path,request.get_host()):
                 print(redirect_path)
                 return redirect(redirect_path)
             else:
-                # Redirect to a success page.
-                context['form']=LoginForm()
                 return redirect("/products")
         else:
             # Return an 'invalid login' error message.
