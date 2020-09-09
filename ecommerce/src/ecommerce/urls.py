@@ -22,10 +22,11 @@ from django.urls import path
 
 
 from .views import home_page,logout_view
-from accounts.views import login_page,register_page,guest_register_view
 
+from accounts.views import login_page,register_page,guest_register_view
 from products.views import ProductListView,product_list_view,product_detail_view
 from cart.views import cart_home,cart_update,checkout_home
+from addresses.views import checkout_address_view
 
 
 urlpatterns = [
@@ -44,7 +45,9 @@ urlpatterns = [
     
     path('cart/',cart_home,name='cart'),
     path('cart/update/',cart_update,name='update'),
-    path('cart/checkout/',checkout_home,name="checkout")
+    path('cart/checkout/',checkout_home,name="checkout"),
+    
+    path('checkout/address/create/',checkout_address_view,name='checkout_address_view')
 ]
 
 if settings.DEBUG:
