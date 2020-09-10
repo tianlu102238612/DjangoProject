@@ -79,6 +79,7 @@ def checkout_home(request):
     else:
         pass
     
+    address_qs = None
     if billing_profile is not None:
         address_qs = Address.objects.filter(billing_profile=billing_profile)
         #shipping_address = address_qs.filter(address_type = 'shipping' )
@@ -114,6 +115,7 @@ def checkout_home(request):
                "login_form":login_form,
                "guest_form":guest_form,
                'address_form':address_form,
+               'address_qs':address_qs,
                }
     
     

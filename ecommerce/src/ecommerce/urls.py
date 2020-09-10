@@ -26,7 +26,7 @@ from .views import home_page,logout_view
 from accounts.views import login_page,register_page,guest_register_view
 from products.views import ProductListView,product_list_view,product_detail_view
 from cart.views import cart_home,cart_update,checkout_home
-from addresses.views import checkout_address_view
+from addresses.views import checkout_address_view,checkout_address_reuse_view
 
 
 urlpatterns = [
@@ -47,7 +47,8 @@ urlpatterns = [
     path('cart/update/',cart_update,name='update'),
     path('cart/checkout/',checkout_home,name="checkout"),
     
-    path('checkout/address/create/',checkout_address_view,name='checkout_address_view')
+    path('checkout/address/create/',checkout_address_view,name='checkout_address_view'),
+    path('checkout/address/reuse/',checkout_address_reuse_view,name='checkout_address_reuse_view'),
 ]
 
 if settings.DEBUG:
