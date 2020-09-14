@@ -30,5 +30,5 @@ class Address(models.Model):
             state=self.state,
             postcode=self.postcode,
             city=self.city,
-            country=self.country
+            country=self.country,
             )

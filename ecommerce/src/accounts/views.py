@@ -36,9 +36,9 @@ def guest_register_view(request):
             print("redirect path:" + redirect_path)
             return redirect(redirect_path)
         else:
-            return redirect("/register")
+            return redirect("/cart/checkout/")
         
-    return redirect("/register")
+    return redirect("/cart/checkout/")
 
 
 

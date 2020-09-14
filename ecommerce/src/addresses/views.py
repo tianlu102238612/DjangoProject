@@ -62,22 +62,19 @@ def checkout_address_reuse_view(request):
     redirect_path = next_get or next_post or None
     
     current_user = request.user
-    
-    if request.method == "POST":
-        print(request.POST)
-        shipping_address = request.POST.get('shipping_address',None)
-        address_type = request.POST.get('address_type')
-        if current_user.is_authenticated:
+    if current_user.is_authenticated:
+        if request.method == "POST":
+            print(request.POST)
+            shipping_address = request.POST.get('shipping_address',None)
+            address_type = request.POST.get('address_type')
             billing_profile,billing_profile_created = BillingProfile.objects.get_or_create(user=current_user,email=current_user.email)
-        else:
-            pass
-        
+
         if shipping_address is not None:
-            qs = Address.objects.filter(billing_profile=billing_profile,id=shipping_address)
-            if qs.exists():
-                request.session[address_type+"_address_id"] = shipping_address
-                print(address_type+"_address_id")
-            if is_safe_url(redirect_path,request.get_host()):
-                    print("redirect path:" + redirect_path)
-                    return redirect(redirect_path)
+                qs = Address.objects.filter(billing_profile=billing_profile,id=shipping_address)
+                if qs.exists():
+                    request.session[address_type+"_address_id"] = shipping_address
+                    print(address_type+"_address_id")
+                if is_safe_url(redirect_path,request.get_host()):
+                        print("redirect path:" + redirect_path)
+                        return redirect(redirect_path)
     return redirect("/cart/checkout/")
