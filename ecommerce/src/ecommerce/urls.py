@@ -27,6 +27,7 @@ from accounts.views import login_page,register_page,guest_register_view
 from products.views import ProductListView,product_list_view,product_detail_view
 from cart.views import cart_home,cart_update,checkout_home
 from addresses.views import checkout_address_view,checkout_address_reuse_view
+from billing.views import payment_method_view,payment_method_createview
 
 
 urlpatterns = [
@@ -49,6 +50,9 @@ urlpatterns = [
     
     path('checkout/address/create/',checkout_address_view,name='checkout_address_view'),
     path('checkout/address/reuse/',checkout_address_reuse_view,name='checkout_address_reuse_view'),
+    
+    path('billing/paymentmethod/',payment_method_view,name='billing_paymentmethod'),
+    path('billing/paymentmethod/create/',payment_method_createview,name='payment_method_create'),
 ]
 
 if settings.DEBUG:
