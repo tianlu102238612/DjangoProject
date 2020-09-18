@@ -45,8 +45,33 @@ def user_created_receiver(sender,instance,created,*args,**kwargs):
 post_save.connect(user_created_receiver,sender=User)
 
 
+class CardManager(models.Manager):
+    new_card = None
+    def add_new_card(self,billing_profile,stripe_card_response):
+        new_card = self.model(billing_profile=billing_profile,
+                              stripe_id = stripe_card_response.id,
+                              brand = stripe_card_response.brand,
+                              country = stripe_card_response.country,
+                              fingerprint = stripe_card_response.fingerprint,
+                              last4 = stripe_card_response.last4,
+                              )
+        new_card.save()
+        print("new card saved")
+        return new_card
 
+class Card(models.Model):
+    billing_profile = models.ForeignKey(BillingProfile,on_delete=models.CASCADE)
+    stripe_id = models.CharField(max_length=120)
+    brand = models.CharField(max_length=120, blank=True,null=True)
+    country = models.CharField(max_length=120, blank=True,null=True)
+    fingerprint = models.CharField(max_length=120, blank=True,null=True)
+    last4 = models.CharField(max_length=120, blank=True,null=True)
     
+    
+    objects = CardManager()
+    
+    def __str__(self):
+        return self.last4
     
 
 
