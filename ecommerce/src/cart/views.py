@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+from django.http import HttpResponse
 
 from products.models import Product
 from .models import Cart
@@ -121,9 +122,14 @@ def checkout_home(request):
     if request.method == "POST":
         is_valid = order_obj.checkout_valid()
         if is_valid:
-            del request.session['cart_id']
-            order_obj.change_status_to_paid()
-            return redirect("/cart/success")
+            is_paid, seller_msg = billing_profile.charge(order_obj)
+            if is_paid:
+                order_obj.change_status_to_paid()
+                del request.session['cart_id']
+                return HttpResponse("checkout success")
+            else:
+                return HttpResponse("checkout failed")
+                print(seller_msg)
 
 
     context = {"order_object":order_obj,
