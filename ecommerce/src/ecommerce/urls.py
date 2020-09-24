@@ -28,6 +28,7 @@ from products.views import ProductListView,product_list_view,product_detail_view
 from cart.views import cart_home,cart_update,checkout_home
 from addresses.views import checkout_address_view,checkout_address_reuse_view
 from billing.views import payment_method_view,payment_method_createview
+from order.views import history_orders_view
 
 
 urlpatterns = [
@@ -53,6 +54,11 @@ urlpatterns = [
     
     path('billing/paymentmethod/',payment_method_view,name='billing_paymentmethod'),
     path('billing/paymentmethod/create/',payment_method_createview,name='payment_method_create'),
+    
+    path('orders/',history_orders_view,name='history_orders'),
+    
+
+    
 ]
 
 if settings.DEBUG:

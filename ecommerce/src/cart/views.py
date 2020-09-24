@@ -29,7 +29,6 @@ def cart_home(request):
     cart_obj.save()
     context = {"cart":cart_obj}
     
-    
     return render(request,"cart/home.html",context)
 
 
@@ -87,7 +86,6 @@ def checkout_home(request):
     guest_email_id = request.session.get('guest_email_id')
     billing_address_id = request.session.get('billing_address_id',None)
     shipping_address_id = request.session.get('shipping_address_id',None)
-    
     
     
     if current_user.is_authenticated:

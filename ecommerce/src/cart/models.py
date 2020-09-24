@@ -29,7 +29,9 @@ class CartManager(models.Manager):
         if user is not None:
             if user.is_authenticated:
                 user_obj = user
-        return self.model.objects.create(user=user_obj)           
+        return self.model.objects.create(user=user_obj)  
+
+         
 
 class Cart(models.Model):
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True,blank=True)
@@ -45,6 +47,10 @@ class Cart(models.Model):
     #return the id of the cart
     def __str__(self):
         return str(self.id)
+    
+class CartItem(models.Model):
+    products = models.ManyToManyField(Product,blank=True)
+        
 
 def pre_save_cart_receiver(sender,instance,action,*args,**kwargs):
     print(action)
