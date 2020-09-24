@@ -14,6 +14,7 @@ from addresses.models import Address
 from addresses.forms import AddressForm
 from accounts.forms import LoginForm,RegisterForm,GuestForm
 
+STRIPE_PUBLISHABLE_KEY = "pk_test_51HRwMeEcligTwCtGrB70qW1aPm94C4P6f8U3Mdo8CJ1mYFRJau5OH0zeFGq3CXmeGYZ7taXrRKTJwCQGcR5krfpL00jlRIytcR"
 
 def cart_home(request):
     cart_obj,new_obj = Cart.objects.new_or_get_cart(request)
@@ -81,13 +82,17 @@ def checkout_home(request):
     login_form = LoginForm() 
     guest_form = GuestForm()
     address_form = AddressForm()
+    user_is_auth = False
     
     guest_email_id = request.session.get('guest_email_id')
     billing_address_id = request.session.get('billing_address_id',None)
     shipping_address_id = request.session.get('shipping_address_id',None)
     
+    
+    
     if current_user.is_authenticated:
         #login user checkout
+        user_is_auth = True
         billing_profile,billing_profile_created = BillingProfile.objects.get_or_create(user=current_user,email=current_user.email)
     elif guest_email_id is not None:
         #guesr user checkout
@@ -97,7 +102,11 @@ def checkout_home(request):
         pass
     
     address_qs = None
+    user_has_card = False
+    default_card = None
     if billing_profile is not None:
+        user_has_card = billing_profile.user_has_card
+        default_card = billing_profile.default_card
         address_qs = Address.objects.filter(billing_profile=billing_profile)
         #shipping_address = address_qs.filter(address_type = 'shipping' )
         #billing_address = address_qs.filter(address_type = 'billing' )
@@ -138,6 +147,10 @@ def checkout_home(request):
                "guest_form":guest_form,
                'address_form':address_form,
                'address_qs':address_qs,
+               'user_has_card':user_has_card,
+               'STRIPE_PUBLISHABLE_KEY':STRIPE_PUBLISHABLE_KEY,
+               'user_is_auth':user_is_auth,
+               "default_card":default_card,
                }
     
     

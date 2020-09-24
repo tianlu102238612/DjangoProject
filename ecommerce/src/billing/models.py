@@ -26,6 +26,19 @@ class BillingProfile(models.Model):
     
     def charge(self,order_obj,card=None):
         return Charge.objects.conductCharge(self,order_obj,card)
+    
+    @property
+    def user_has_card(self):
+        card_qs = self.card_set.all()
+        return card_qs.exists()  ###return true or false
+    
+    @property
+    def default_card(self):
+        default_card = self.card_set.filter(default=True)
+        if default_card.exists():
+            return default_card.first()
+        return None
+    
 
 
 ### create customer id    
@@ -53,16 +66,19 @@ post_save.connect(user_created_receiver,sender=User)
 #################################################################################################
 class CardManager(models.Manager):
     new_card = None
-    def add_new_card(self,billing_profile,stripe_card_response):
-        new_card = self.model(billing_profile=billing_profile,
+    def add_new_card(self,billing_profile,token):
+        if token:
+            stripe_card_response =  stripe.Customer.create_source(billing_profile.customer_id,source=token,)
+            print(stripe_card_response)
+            new_card = self.model(billing_profile=billing_profile,
                               stripe_id = stripe_card_response.id,
                               brand = stripe_card_response.brand,
                               country = stripe_card_response.country,
                               fingerprint = stripe_card_response.fingerprint,
                               last4 = stripe_card_response.last4,
                               )
-        new_card.save()
-        print("new card saved")
+            new_card.save()
+            print("new card saved")
         return new_card
 
 class Card(models.Model):
@@ -106,7 +122,7 @@ class ChargeManager(models.Manager):
               source = card_obj.stripe_id,  #payment source to be charged, this can be the ID of a card,a token
               metadata = {"order_id":order_obj.order_id}
             )
-        print("create a charge: ")
+        print("response of  create a charge: ")
         print(charge_create_response)
         
         

@@ -6,7 +6,7 @@ from .forms import AddressForm
 
 from billing.models import BillingProfile
 from .models import Address
-
+from accounts.models import GuestEmail
 # Create your views here.
 def checkout_address_view(request):
     form = AddressForm(request.POST or None)
@@ -24,7 +24,9 @@ def checkout_address_view(request):
     if form.is_valid():
         print(request.POST)
         instance = form.save(commit=False)
-        
+        guest_email_id = request.session['guest_email_id']
+        print("guest_email_id:")
+        print(guest_email_id)
         
         if current_user.is_authenticated:
             #login user checkout
@@ -34,7 +36,7 @@ def checkout_address_view(request):
             guest_email_object = GuestEmail.objects.get(id=guest_email_id)
             billing_profile,billing_guest_profile_created = BillingProfile.objects.get_or_create(email=guest_email_object.email)
         else:
-            pass
+            billing_profile = None
         
         if billing_profile is not None:
             address_type = request.POST.get('address_type','shipping')
